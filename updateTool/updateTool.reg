@@ -1,0 +1,17 @@
+REGEDIT
+; 此 .REG 文件可能由 SETUP 程序使用。
+;   如果 SETUP 程序不可用，则调用
+;   CWinApp::RegisterShellFileTypes 和 COleObjectFactory::UpdateRegistryAll
+;   在 InitInstance 中对下列项自动进行注册。
+
+
+HKEY_CLASSES_ROOT\updateTool.Application = updateTool Application
+
+
+HKEY_CLASSES_ROOT\updateTool.Application\CLSID = {3BF5B980-4E41-4A7A-8C49-8C0ED4C16034}
+
+HKEY_CLASSES_ROOT\CLSID\{3BF5B980-4E41-4A7A-8C49-8C0ED4C16034} = updateTool Application
+HKEY_CLASSES_ROOT\CLSID\{3BF5B980-4E41-4A7A-8C49-8C0ED4C16034}\ProgId = updateTool.Application
+
+
+HKEY_CLASSES_ROOT\CLSID\{3BF5B980-4E41-4A7A-8C49-8C0ED4C16034}\LocalServer32 = updateTool.EXE

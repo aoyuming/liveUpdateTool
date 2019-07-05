@@ -1,0 +1,29 @@
+// updateTool.idl : updateTool.exe 的类型库源
+
+// 此文件将由 MIDL 编译器处理以产生
+// 类型库(updateTool.tlb)。
+
+[ uuid(64C129AF-E5F7-4D00-9AE9-0C029C53D9C9), version(1.0) ]
+library updateTool
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	//  CupdateToolDoc 的主调度接口
+	
+	[ uuid(00FCB98D-79D4-4009-A0F6-4FAA6EA0230F) ]
+	dispinterface IupdateTool
+	{
+		properties:
+			
+		methods:
+	};
+
+	//  CupdateToolDoc 的类信息
+	
+	[ uuid(3BF5B980-4E41-4A7A-8C49-8C0ED4C16034) ]
+	coclass updateTool
+	{
+		[default] dispinterface IupdateTool;
+	};
+};
