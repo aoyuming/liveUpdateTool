@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="md5">
+      <UniqueIdentifier>{398aaed7-af9d-4fe4-97ac-4786f99dc6c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -36,6 +39,15 @@
     <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="md5.h">
+      <Filter>md5</Filter>
+    </ClInclude>
+    <ClInclude Include="md5global.h">
+      <Filter>md5</Filter>
+    </ClInclude>
+    <ClInclude Include="md5file.h">
+      <Filter>md5</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="updateTool.cpp">
@@ -49,6 +61,12 @@
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="md5.cpp">
+      <Filter>md5</Filter>
+    </ClCompile>
+    <ClCompile Include="md5file.cpp">
+      <Filter>md5</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

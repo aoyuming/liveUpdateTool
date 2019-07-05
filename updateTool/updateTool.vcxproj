@@ -29,8 +29,9 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -202,6 +203,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DlgProxy.h" />
+    <ClInclude Include="md5.h" />
+    <ClInclude Include="md5file.h" />
+    <ClInclude Include="md5global.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -210,6 +214,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DlgProxy.cpp" />
+    <ClCompile Include="md5.cpp" />
+    <ClCompile Include="md5file.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -235,4 +241,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="updateTool.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

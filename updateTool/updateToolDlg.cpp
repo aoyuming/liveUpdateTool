@@ -1,5 +1,5 @@
-
-// updateToolDlg.cpp : ÊµÏÖÎÄ¼ş
+ï»¿
+// updateToolDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -7,28 +7,30 @@
 #include "updateToolDlg.h"
 #include "DlgProxy.h"
 #include "afxdialogex.h"
+#include "md5file.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 
-// ÓÃÓÚÓ¦ÓÃ³ÌĞò¡°¹ØÓÚ¡±²Ëµ¥ÏîµÄ CAboutDlg ¶Ô»°¿ò
+// ç”¨äºåº”ç”¨ç¨‹åºâ€œå…³äºâ€èœå•é¡¹çš„ CAboutDlg å¯¹è¯æ¡†
 
 class CAboutDlg : public CDialogEx
 {
 public:
 	CAboutDlg();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_ABOUTBOX };
 #endif
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
-// ÊµÏÖ
+// å®ç°
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -46,7 +48,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CupdateToolDlg ¶Ô»°¿ò
+// CupdateToolDlg å¯¹è¯æ¡†
 
 
 IMPLEMENT_DYNAMIC(CupdateToolDlg, CDialogEx);
@@ -60,9 +62,9 @@ CupdateToolDlg::CupdateToolDlg(CWnd* pParent /*=NULL*/)
 
 CupdateToolDlg::~CupdateToolDlg()
 {
-	// Èç¹û¸Ã¶Ô»°¿òÓĞ×Ô¶¯»¯´úÀí£¬Ôò
-	//  ½«´Ë´úÀíÖ¸Ïò¸Ã¶Ô»°¿òµÄºóÏòÖ¸ÕëÉèÖÃÎª NULL£¬ÒÔ±ã
-	//  ´Ë´úÀíÖªµÀ¸Ã¶Ô»°¿òÒÑ±»É¾³ı¡£
+	// å¦‚æœè¯¥å¯¹è¯æ¡†æœ‰è‡ªåŠ¨åŒ–ä»£ç†ï¼Œåˆ™
+	//  å°†æ­¤ä»£ç†æŒ‡å‘è¯¥å¯¹è¯æ¡†çš„åå‘æŒ‡é’ˆè®¾ç½®ä¸º NULLï¼Œä»¥ä¾¿
+	//  æ­¤ä»£ç†çŸ¥é“è¯¥å¯¹è¯æ¡†å·²è¢«åˆ é™¤ã€‚
 	if (m_pAutoProxy != NULL)
 		m_pAutoProxy->m_pDialog = NULL;
 }
@@ -70,6 +72,13 @@ CupdateToolDlg::~CupdateToolDlg()
 void CupdateToolDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_EDIT1, m_MainExeRootPath);
+	DDX_Control(pDX, IDC_EDIT2, m_OutPathEdit);
+	DDX_Control(pDX, IDC_BUTTON3, m_CrateBtn);
+	DDX_Control(pDX, IDC_LIST3, m_ListCtrl);
+	DDX_Control(pDX, IDC_EDIT3, m_ProjectUrl);
+	DDX_Control(pDX, IDC_EDIT4, m_VersionUrl);
+	DDX_Control(pDX, IDC_EDIT5, m_PackUrl);
 }
 
 BEGIN_MESSAGE_MAP(CupdateToolDlg, CDialogEx)
@@ -77,18 +86,21 @@ BEGIN_MESSAGE_MAP(CupdateToolDlg, CDialogEx)
 	ON_WM_CLOSE()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BUTTON1, &CupdateToolDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON2, &CupdateToolDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CupdateToolDlg::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 
-// CupdateToolDlg ÏûÏ¢´¦Àí³ÌĞò
+// CupdateToolDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 BOOL CupdateToolDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// ½«¡°¹ØÓÚ...¡±²Ëµ¥ÏîÌí¼Óµ½ÏµÍ³²Ëµ¥ÖĞ¡£
+	// å°†â€œå…³äº...â€èœå•é¡¹æ·»åŠ åˆ°ç³»ç»Ÿèœå•ä¸­ã€‚
 
-	// IDM_ABOUTBOX ±ØĞëÔÚÏµÍ³ÃüÁî·¶Î§ÄÚ¡£
+	// IDM_ABOUTBOX å¿…é¡»åœ¨ç³»ç»Ÿå‘½ä»¤èŒƒå›´å†…ã€‚
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -106,14 +118,21 @@ BOOL CupdateToolDlg::OnInitDialog()
 		}
 	}
 
-	// ÉèÖÃ´Ë¶Ô»°¿òµÄÍ¼±ê¡£  µ±Ó¦ÓÃ³ÌĞòÖ÷´°¿Ú²»ÊÇ¶Ô»°¿òÊ±£¬¿ò¼Ü½«×Ô¶¯
-	//  Ö´ĞĞ´Ë²Ù×÷
-	SetIcon(m_hIcon, TRUE);			// ÉèÖÃ´óÍ¼±ê
-	SetIcon(m_hIcon, FALSE);		// ÉèÖÃĞ¡Í¼±ê
+	// è®¾ç½®æ­¤å¯¹è¯æ¡†çš„å›¾æ ‡ã€‚  å½“åº”ç”¨ç¨‹åºä¸»çª—å£ä¸æ˜¯å¯¹è¯æ¡†æ—¶ï¼Œæ¡†æ¶å°†è‡ªåŠ¨
+	//  æ‰§è¡Œæ­¤æ“ä½œ
+	SetIcon(m_hIcon, TRUE);			// è®¾ç½®å¤§å›¾æ ‡
+	SetIcon(m_hIcon, FALSE);		// è®¾ç½®å°å›¾æ ‡
 
-	// TODO: ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯´úÂë
+	m_MainExeRootPath.EnableWindow(FALSE);
+	m_OutPathEdit.EnableWindow(FALSE);
 
-	return TRUE;  // ³ı·Ç½«½¹µãÉèÖÃµ½¿Ø¼ş£¬·ñÔò·µ»Ø TRUE
+	CRect rect;
+	m_ListCtrl.GetWindowRect(&rect);
+	m_ListCtrl.InsertColumn(0, _T("å½“å‰æ¸…å•æ–‡ä»¶è·¯å¾„                 æ³¨ï¼šç”Ÿæˆåçš„æ–‡ä»¶è·¯å¾„æ˜¯ç›¸å¯¹äºä¸»ç¨‹åºçš„è·¯å¾„"), LVCFMT_LEFT, rect.Width());
+
+	// TODO: åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–ä»£ç 
+
+	return TRUE;  // é™¤éå°†ç„¦ç‚¹è®¾ç½®åˆ°æ§ä»¶ï¼Œå¦åˆ™è¿”å› TRUE
 }
 
 void CupdateToolDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -129,19 +148,19 @@ void CupdateToolDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// Èç¹ûÏò¶Ô»°¿òÌí¼Ó×îĞ¡»¯°´Å¥£¬ÔòĞèÒªÏÂÃæµÄ´úÂë
-//  À´»æÖÆ¸ÃÍ¼±ê¡£  ¶ÔÓÚÊ¹ÓÃÎÄµµ/ÊÓÍ¼Ä£ĞÍµÄ MFC Ó¦ÓÃ³ÌĞò£¬
-//  Õâ½«ÓÉ¿ò¼Ü×Ô¶¯Íê³É¡£
+// å¦‚æœå‘å¯¹è¯æ¡†æ·»åŠ æœ€å°åŒ–æŒ‰é’®ï¼Œåˆ™éœ€è¦ä¸‹é¢çš„ä»£ç 
+//  æ¥ç»˜åˆ¶è¯¥å›¾æ ‡ã€‚  å¯¹äºä½¿ç”¨æ–‡æ¡£/è§†å›¾æ¨¡å‹çš„ MFC åº”ç”¨ç¨‹åºï¼Œ
+//  è¿™å°†ç”±æ¡†æ¶è‡ªåŠ¨å®Œæˆã€‚
 
 void CupdateToolDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // ÓÃÓÚ»æÖÆµÄÉè±¸ÉÏÏÂÎÄ
+		CPaintDC dc(this); // ç”¨äºç»˜åˆ¶çš„è®¾å¤‡ä¸Šä¸‹æ–‡
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// Ê¹Í¼±êÔÚ¹¤×÷Çø¾ØĞÎÖĞ¾ÓÖĞ
+		// ä½¿å›¾æ ‡åœ¨å·¥ä½œåŒºçŸ©å½¢ä¸­å±…ä¸­
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -149,7 +168,7 @@ void CupdateToolDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// »æÖÆÍ¼±ê
+		// ç»˜åˆ¶å›¾æ ‡
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -158,18 +177,18 @@ void CupdateToolDlg::OnPaint()
 	}
 }
 
-//µ±ÓÃ»§ÍÏ¶¯×îĞ¡»¯´°¿ÚÊ±ÏµÍ³µ÷ÓÃ´Ëº¯ÊıÈ¡µÃ¹â±ê
-//ÏÔÊ¾¡£
+//å½“ç”¨æˆ·æ‹–åŠ¨æœ€å°åŒ–çª—å£æ—¶ç³»ç»Ÿè°ƒç”¨æ­¤å‡½æ•°å–å¾—å…‰æ ‡
+//æ˜¾ç¤ºã€‚
 HCURSOR CupdateToolDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-// µ±ÓÃ»§¹Ø±Õ UI Ê±£¬Èç¹û¿ØÖÆÆ÷ÈÔ±£³Ö×ÅËüµÄÄ³¸ö
-//  ¶ÔÏó£¬Ôò×Ô¶¯»¯·şÎñÆ÷²»Ó¦ÍË³ö¡£  ÕâĞ©
-//  ÏûÏ¢´¦Àí³ÌĞòÈ·±£ÈçÏÂÇéĞÎ: Èç¹û´úÀíÈÔÔÚÊ¹ÓÃ£¬
-//  Ôò½«Òş²Ø UI£»µ«ÊÇÔÚ¹Ø±Õ¶Ô»°¿òÊ±£¬
-//  ¶Ô»°¿òÈÔÈ»»á±£ÁôÔÚÄÇÀï¡£
+// å½“ç”¨æˆ·å…³é—­ UI æ—¶ï¼Œå¦‚æœæ§åˆ¶å™¨ä»ä¿æŒç€å®ƒçš„æŸä¸ª
+//  å¯¹è±¡ï¼Œåˆ™è‡ªåŠ¨åŒ–æœåŠ¡å™¨ä¸åº”é€€å‡ºã€‚  è¿™äº›
+//  æ¶ˆæ¯å¤„ç†ç¨‹åºç¡®ä¿å¦‚ä¸‹æƒ…å½¢: å¦‚æœä»£ç†ä»åœ¨ä½¿ç”¨ï¼Œ
+//  åˆ™å°†éšè— UIï¼›ä½†æ˜¯åœ¨å…³é—­å¯¹è¯æ¡†æ—¶ï¼Œ
+//  å¯¹è¯æ¡†ä»ç„¶ä¼šä¿ç•™åœ¨é‚£é‡Œã€‚
 
 void CupdateToolDlg::OnClose()
 {
@@ -191,9 +210,9 @@ void CupdateToolDlg::OnCancel()
 
 BOOL CupdateToolDlg::CanExit()
 {
-	// Èç¹û´úÀí¶ÔÏóÈÔ±£ÁôÔÚÄÇÀï£¬Ôò×Ô¶¯»¯
-	//  ¿ØÖÆÆ÷ÈÔ»á±£³Ö´ËÓ¦ÓÃ³ÌĞò¡£
-	//  Ê¹¶Ô»°¿ò±£ÁôÔÚÄÇÀï£¬µ«½«Æä UI Òş²ØÆğÀ´¡£
+	// å¦‚æœä»£ç†å¯¹è±¡ä»ä¿ç•™åœ¨é‚£é‡Œï¼Œåˆ™è‡ªåŠ¨åŒ–
+	//  æ§åˆ¶å™¨ä»ä¼šä¿æŒæ­¤åº”ç”¨ç¨‹åºã€‚
+	//  ä½¿å¯¹è¯æ¡†ä¿ç•™åœ¨é‚£é‡Œï¼Œä½†å°†å…¶ UI éšè—èµ·æ¥ã€‚
 	if (m_pAutoProxy != NULL)
 	{
 		ShowWindow(SW_HIDE);
@@ -203,3 +222,149 @@ BOOL CupdateToolDlg::CanExit()
 	return TRUE;
 }
 
+void CupdateToolDlg::PushFilePath(std::vector<CString>& vFilePathList, CString strDir)
+{
+	CFileFind finder;
+	BOOL isNotEmpty = finder.FindFile(strDir + _T("*.*"));//æ€»æ–‡ä»¶å¤¹ï¼Œå¼€å§‹éå†Â 
+	while (isNotEmpty)
+	{
+		isNotEmpty = finder.FindNextFile();//æŸ¥æ‰¾æ–‡ä»¶Â 
+		CString filename = finder.GetFilePath();//è·å–æ–‡ä»¶çš„è·¯å¾„ï¼Œå¯èƒ½æ˜¯æ–‡ä»¶å¤¹ï¼Œå¯èƒ½æ˜¯æ–‡ä»¶Â 
+		if (!(finder.IsDirectory()))
+		{
+			//å¦‚æœæ˜¯æ–‡ä»¶åˆ™åŠ å…¥æ–‡ä»¶åˆ—è¡¨Â 
+			vFilePathList.push_back(filename);//å°†ä¸€ä¸ªæ–‡ä»¶è·¯å¾„åŠ å…¥å®¹å™¨Â 
+		}
+		else 
+		{
+			//é€’å½’éå†ç”¨æˆ·æ–‡ä»¶å¤¹ï¼Œè·³è¿‡éç”¨æˆ·æ–‡ä»¶å¤¹Â 
+			if (!(finder.IsDots() || finder.IsHidden() || finder.IsSystem() || finder.IsTemporary() || finder.IsReadOnly()))
+			{
+				PushFilePath(vFilePathList,filename + _T("/"));
+			}
+		}
+	}
+}
+
+//æ ¹ç›®å½•é€‰æ‹©æŒ‰é’®ç‚¹å‡»
+void CupdateToolDlg::OnBnClickedButton1()
+{
+	char szPath[MAX_PATH];     //å­˜æ”¾é€‰æ‹©çš„ç›®å½•è·¯å¾„ 
+	ZeroMemory(szPath, sizeof(szPath));
+	BROWSEINFO bi;
+	bi.hwndOwner = m_hWnd;
+	bi.pidlRoot = NULL;
+	bi.pszDisplayName = szPath;
+	bi.lpszTitle = "è¯·é€‰æ‹©éœ€è¦æ‰“åŒ…çš„ç›®å½•ï¼š";
+	bi.ulFlags = 0;
+	bi.lpfn = NULL;
+	bi.lParam = 0;
+	bi.iImage = 0;
+
+	//å¼¹å‡ºé€‰æ‹©ç›®å½•å¯¹è¯æ¡†
+	LPITEMIDLIST lp = SHBrowseForFolder(&bi);
+	if (lp && SHGetPathFromIDList(lp, szPath))
+	{
+		//é€’å½’éå†szpath
+		m_PathVect.clear();
+		PushFilePath(m_PathVect, szPath);
+
+		//è®¾ç½®editä¸ºé€‰ä¸­çš„æ–‡ä»¶å¤¹
+		m_MainExeRootPath.SetWindowText(szPath);
+		m_ListCtrl.DeleteAllItems();
+		for (int i = 0; i < (int)m_PathVect.size(); ++i)
+			m_ListCtrl.InsertItem(i, m_PathVect[i]);
+	}
+	else
+		AfxMessageBox("æ— æ•ˆçš„ç›®å½•ï¼Œè¯·é‡æ–°é€‰æ‹©");
+}
+
+//è¾“å‡ºç›®å½•é€‰æ‹©æŒ‰é’®ç‚¹å‡»
+void CupdateToolDlg::OnBnClickedButton2()
+{
+	char szPath[MAX_PATH];     //å­˜æ”¾é€‰æ‹©çš„ç›®å½•è·¯å¾„ 
+	ZeroMemory(szPath, sizeof(szPath));
+	BROWSEINFO bi;
+	bi.hwndOwner = m_hWnd;
+	bi.pidlRoot = NULL;
+	bi.pszDisplayName = szPath;
+	bi.lpszTitle = "è¯·é€‰æ‹©éœ€è¦æ‰“åŒ…çš„ç›®å½•ï¼š";
+	bi.ulFlags = 0;
+	bi.lpfn = NULL;
+	bi.lParam = 0;
+	bi.iImage = 0;
+
+	//å¼¹å‡ºé€‰æ‹©ç›®å½•å¯¹è¯æ¡†
+	LPITEMIDLIST lp = SHBrowseForFolder(&bi);
+	if (lp && SHGetPathFromIDList(lp, szPath))
+	{
+		m_OutPathStr = szPath;
+		m_OutPathStr += _T("\\project.manifest");
+		m_OutPathEdit.SetWindowText(m_OutPathStr);
+	}
+	else
+		AfxMessageBox("æ— æ•ˆçš„ç›®å½•ï¼Œè¯·é‡æ–°é€‰æ‹©");
+}
+
+//ç”ŸæˆæŒ‰é’®ç‚¹å‡»
+void CupdateToolDlg::OnBnClickedButton3()
+{
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+	if (m_PathVect.size() == 0)
+	{
+		MessageBox(_T("ç”Ÿæˆå¤±è´¥"));
+		return;
+	}
+
+	struct Node
+	{
+		CString md5;
+		CString fileUrl;
+	};
+
+	//ç”Ÿæˆç›¸å¯¹äºä¸»ç¨‹åºçš„æ¸…å•è·¯å¾„
+	vector<Node> vect;
+	CString mianPath, proUrl, verUrl, packUrl;
+	m_ProjectUrl.GetWindowText(proUrl);
+	m_VersionUrl.GetWindowText(verUrl);
+	m_PackUrl.GetWindowText(packUrl);
+	m_MainExeRootPath.GetWindowText(mianPath);
+
+	if (proUrl == _T("") || verUrl == _T("") || mianPath == _T("") || packUrl == _T(""))
+	{
+		MessageBox(_T("ç”Ÿæˆå¤±è´¥ï¼Œè¯·å¡«å†™æ­£ç¡®çš„ä¿¡æ¯"));
+		return;
+	}
+
+	for (int i = 0; i < (int)m_PathVect.size(); ++i)
+	{
+		Node node;
+		int count = m_PathVect[i].GetLength() - mianPath.GetLength();
+		node.fileUrl = m_PathVect[i].Right(count);
+		node.md5 = getFileMD5(m_PathVect[i].GetBuffer()).c_str();
+		vect.push_back(node);
+	}
+
+	CString allData, temp;
+	temp.Format(_T("%d\r\n"), vect.size());
+	allData += CString(_T("è¿œç¨‹packageUrlåœ°å€:")) + packUrl;
+	allData += CString(_T("è¿œç¨‹project.manifeståœ°å€:")) + proUrl + _T("\r\n");
+	allData += CString(_T("è¿œç¨‹version.manifeståœ°å€:")) + verUrl + _T("\r\n");
+	allData += CString(_T("æ¸…å•æ–‡ä»¶æ•°é‡:")) + temp;
+
+	//å†™å…¥æ–‡ä»¶
+	for (int i = 0; i < (int)vect.size(); ++i)
+	{
+		temp.Format(_T("æ–‡ä»¶url:%s\r\nmd5:%s\r\n"), vect[i].fileUrl, vect[i].md5);
+		allData += temp;
+	}
+
+	FILE* pf = NULL;
+	fopen_s(&pf, m_OutPathStr, "wb");
+	if (!pf)
+		return;
+
+	fwrite(allData.GetBuffer(), allData.GetLength(), 1, pf);
+	fclose(pf);
+	MessageBox(_T("å†™å…¥æˆåŠŸï¼"));
+}
