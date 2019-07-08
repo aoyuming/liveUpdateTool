@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Fri Jul 05 14:53:59 2019
+/* at Mon Jul 08 11:00:52 2019
  */
 /* Compiler settings for updateTool.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 

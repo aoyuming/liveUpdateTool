@@ -89,6 +89,7 @@ BEGIN_MESSAGE_MAP(CupdateToolDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, &CupdateToolDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CupdateToolDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON3, &CupdateToolDlg::OnBnClickedButton3)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -129,6 +130,8 @@ BOOL CupdateToolDlg::OnInitDialog()
 	CRect rect;
 	m_ListCtrl.GetWindowRect(&rect);
 	m_ListCtrl.InsertColumn(0, _T("当前清单文件路径                 注：生成后的文件路径是相对于主程序的路径"), LVCFMT_LEFT, rect.Width());
+
+	SetTimer(0, 30, NULL);
 
 	// TODO: 在此添加额外的初始化代码
 
@@ -249,34 +252,25 @@ void CupdateToolDlg::PushFilePath(std::vector<CString>& vFilePathList, CString s
 //根目录选择按钮点击
 void CupdateToolDlg::OnBnClickedButton1()
 {
-	char szPath[MAX_PATH];     //存放选择的目录路径 
-	ZeroMemory(szPath, sizeof(szPath));
-	BROWSEINFO bi;
-	bi.hwndOwner = m_hWnd;
-	bi.pidlRoot = NULL;
-	bi.pszDisplayName = szPath;
-	bi.lpszTitle = "请选择需要打包的目录：";
-	bi.ulFlags = 0;
-	bi.lpfn = NULL;
-	bi.lParam = 0;
-	bi.iImage = 0;
-
-	//弹出选择目录对话框
-	LPITEMIDLIST lp = SHBrowseForFolder(&bi);
-	if (lp && SHGetPathFromIDList(lp, szPath))
+	CFileDialog fileDlg(true, _T("exe"), _T("*.exe"), OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("exe Files (*.exe)|*.exe|All File (*.*)|*.*||"), NULL);
+	if (fileDlg.DoModal() == IDOK)    //弹出对话框  
 	{
+		CString path = fileDlg.GetPathName();//得到完整的文件名和目录名拓展名
+		m_MainRoutineName = fileDlg.GetFileName();
+		int count = path.GetLength() - m_MainRoutineName.GetLength();
+		m_MainExeRootPath.SetWindowText(path.Left(count));//将主程序目录显示
+		GetDlgItem(IDC_EDIT7)->SetWindowText(m_MainRoutineName);
+
 		//递归遍历szpath
 		m_PathVect.clear();
-		PushFilePath(m_PathVect, szPath);
+		PushFilePath(m_PathVect, path.Left(count));
 
 		//设置edit为选中的文件夹
-		m_MainExeRootPath.SetWindowText(szPath);
+		m_MainExeRootPath.SetWindowText(path.Left(count));
 		m_ListCtrl.DeleteAllItems();
 		for (int i = 0; i < (int)m_PathVect.size(); ++i)
 			m_ListCtrl.InsertItem(i, m_PathVect[i]);
 	}
-	else
-		AfxMessageBox("无效的目录，请重新选择");
 }
 
 //输出目录选择按钮点击
@@ -320,17 +314,22 @@ void CupdateToolDlg::OnBnClickedButton3()
 	{
 		CString md5;
 		CString fileUrl;
+		unsigned long int size;//文件大小 字节
 	};
 
 	//生成相对于主程序的清单路径
 	vector<Node> vect;
-	CString mianPath, proUrl, verUrl, packUrl;
+	CString mianPath, proUrl, verUrl, packUrl, name, LaunchParameters;
 	m_ProjectUrl.GetWindowText(proUrl);
 	m_VersionUrl.GetWindowText(verUrl);
 	m_PackUrl.GetWindowText(packUrl);
 	m_MainExeRootPath.GetWindowText(mianPath);
+	GetDlgItem(IDC_EDIT6)->GetWindowText(LaunchParameters);
+	GetDlgItem(IDC_EDIT7)->GetWindowText(name);
 
-	if (proUrl == _T("") || verUrl == _T("") || mianPath == _T("") || packUrl == _T(""))
+	if (proUrl == _T("") || verUrl == _T("") 
+		|| mianPath == _T("") || packUrl == _T("") 
+		|| (name == _T("") && LaunchParameters == _T("")))
 	{
 		MessageBox(_T("生成失败，请填写正确的信息"));
 		return;
@@ -342,20 +341,32 @@ void CupdateToolDlg::OnBnClickedButton3()
 		int count = m_PathVect[i].GetLength() - mianPath.GetLength();
 		node.fileUrl = m_PathVect[i].Right(count);
 		node.md5 = getFileMD5(m_PathVect[i].GetBuffer()).c_str();
+
+		CFile file;
+		if (!file.Open(m_PathVect[i], CFile::modeRead))
+		{
+			CString hint = m_PathVect[i] + _T("打开失败");
+			MessageBox(hint);
+			return;
+		}
+		node.size = file.GetLength();
 		vect.push_back(node);
+		file.Close();
 	}
 
 	CString allData, temp;
 	temp.Format(_T("%d\r\n"), vect.size());
-	allData += CString(_T("远程packageUrl地址:")) + packUrl;
+	allData += CString(_T("远程packageUrl地址:")) + packUrl + _T("\r\n");
 	allData += CString(_T("远程project.manifest地址:")) + proUrl + _T("\r\n");
 	allData += CString(_T("远程version.manifest地址:")) + verUrl + _T("\r\n");
+	allData += CString(_T("主程序名字:")) + name + _T("\r\n");
+	allData += CString(_T("启动参数:")) + LaunchParameters + _T("\r\n");
 	allData += CString(_T("清单文件数量:")) + temp;
 
 	//写入文件
 	for (int i = 0; i < (int)vect.size(); ++i)
 	{
-		temp.Format(_T("文件url:%s\r\nmd5:%s\r\n"), vect[i].fileUrl, vect[i].md5);
+		temp.Format(_T("文件url:%s\r\nMd5:%s\r\nSize:%d\r\n"), vect[i].fileUrl, vect[i].md5, vect[i].size);
 		allData += temp;
 	}
 
@@ -367,4 +378,31 @@ void CupdateToolDlg::OnBnClickedButton3()
 	fwrite(allData.GetBuffer(), allData.GetLength(), 1, pf);
 	fclose(pf);
 	MessageBox(_T("写入成功！"));
+}
+
+
+void CupdateToolDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	if (nIDEvent == 0)
+	{
+		BOOL enable = TRUE;
+		CString mianPath, proUrl, verUrl, packUrl, name, LaunchParameters, outPut;
+		m_ProjectUrl.GetWindowText(proUrl);
+		m_VersionUrl.GetWindowText(verUrl);
+		m_PackUrl.GetWindowText(packUrl);
+		m_MainExeRootPath.GetWindowText(mianPath);
+		GetDlgItem(IDC_EDIT6)->GetWindowText(LaunchParameters);
+		GetDlgItem(IDC_EDIT7)->GetWindowText(name);
+		GetDlgItem(IDC_EDIT2)->GetWindowText(outPut);
+		if (proUrl == _T("") || verUrl == _T("") || outPut ==  _T("")
+			|| mianPath == _T("") || packUrl == _T("")
+			|| (name == _T("") && LaunchParameters == _T("")))
+		{
+			enable = FALSE;
+		}
+		GetDlgItem(IDC_BUTTON3)->EnableWindow(enable);
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
 }

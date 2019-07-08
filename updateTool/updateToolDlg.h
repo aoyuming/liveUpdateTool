@@ -66,6 +66,9 @@ public:
 	//输出文件路径
 	CString m_OutPathStr;
 
+	//主程序文件名字
+	CString m_MainRoutineName;
+
 	void PushFilePath(std::vector<CString>& vFilePathList, CString strDir);
 
 	afx_msg void OnBnClickedButton1();
@@ -77,4 +80,5 @@ public:
 	CEdit m_VersionUrl;
 	// 远程安装包地址
 	CEdit m_PackUrl;
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
