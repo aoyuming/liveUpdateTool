@@ -6,6 +6,8 @@
 #include "afxwin.h"
 #include "afxcmn.h"
 #include <vector>
+#include "UpdateData.h"
+
 
 using namespace std;
 
@@ -17,6 +19,13 @@ class CupdateToolDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CupdateToolDlg);
 	friend class CupdateToolDlgAutoProxy;
+
+	struct Node
+	{
+		CString md5;
+		CString fileUrl;
+		unsigned long int size;//文件大小 字节
+	};
 
 // 构造
 public:
@@ -49,36 +58,21 @@ protected:
 	virtual void OnCancel();
 	DECLARE_MESSAGE_MAP()
 public:
-	// 主程序根目录
-	CEdit m_MainExeRootPath;
 
-	// 清单文件输出目录
-	CEdit m_OutPathEdit;
+	//本地所有文件路径
+	std::vector<CString> m_LocalAllFilePathVect;
 
-	// 生成按钮
-	CButton m_CrateBtn;
+	UpdateDataDlg* m_UpdateDataDlg;
 
-	// 当前清单中的文件
-	CListCtrl m_ListCtrl;
-
-	std::vector<CString> m_PathVect;
-
-	//输出文件路径
-	CString m_OutPathStr;
-
-	//主程序文件名字
-	CString m_MainRoutineName;
+	//输出信息
+	vector<Node> m_Vect;
 
 	void PushFilePath(std::vector<CString>& vFilePathList, CString strDir);
 
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnBnClickedButton2();
 	afx_msg void OnBnClickedButton3();
-	// 远程project.manifest地址
-	CEdit m_ProjectUrl;
-	// 远程vectsion.manifest地址
-	CEdit m_VersionUrl;
-	// 远程安装包地址
-	CEdit m_PackUrl;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+
+	afx_msg void OnBnClickedButton5();
 };
