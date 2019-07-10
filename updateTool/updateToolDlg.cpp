@@ -84,6 +84,7 @@ BEGIN_MESSAGE_MAP(CupdateToolDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON3, &CupdateToolDlg::OnBnClickedButton3)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON5, &CupdateToolDlg::OnBnClickedButton5)
+	ON_BN_CLICKED(IDC_BUTTON4, &CupdateToolDlg::OnBnClickedButton4)
 END_MESSAGE_MAP()
 
 
@@ -343,7 +344,9 @@ void CupdateToolDlg::OnBnClickedButton3()
 	}
 
 	//生成相对于主程序的清单路径
-	CString mianPath, proUrl, verUrl, packUrl, name, LaunchParameters, version, proUotput;
+	CString mianPath, proUrl, verUrl, packUrl, 
+			name, LaunchParameters, version, 
+			proUotput, className;
 	GetDlgItem(IDC_EDIT3)->GetWindowText(proUrl);
 	GetDlgItem(IDC_EDIT4)->GetWindowText(verUrl);
 	GetDlgItem(IDC_EDIT5)->GetWindowText(packUrl);
@@ -352,8 +355,12 @@ void CupdateToolDlg::OnBnClickedButton3()
 	GetDlgItem(IDC_EDIT7)->GetWindowText(name);
 	GetDlgItem(IDC_EDIT9)->GetWindowText(version);
 	GetDlgItem(IDC_EDIT2)->GetWindowText(proUotput);
+	GetDlgItem(IDC_EDIT10)->GetWindowText(className);
 
 	if (LaunchParameters == _T(""))
+		LaunchParameters = _T("null");
+
+	if (className == _T(""))
 		LaunchParameters = _T("null");
 
 	CString allData, temp;
@@ -362,6 +369,7 @@ void CupdateToolDlg::OnBnClickedButton3()
 	allData += CString(_T("远程project.manifest地址:")) + proUrl + _T("\r\n");
 	allData += CString(_T("远程version.manifest地址:")) + verUrl + _T("\r\n");
 	allData += CString(_T("主程序名字:")) + name + _T("\r\n");
+	allData += CString(_T("主窗口注册类名:")) + className + _T("\r\n");
 	allData += CString(_T("启动参数:")) + LaunchParameters + _T("\r\n");
 	allData += CString(_T("清单文件数量:")) + temp;
 
@@ -439,4 +447,32 @@ void CupdateToolDlg::OnBnClickedButton5()
 	}
 
 	m_UpdateDataDlg->ShowWindow(SW_SHOW);
+}
+
+//version文件输出目录
+void CupdateToolDlg::OnBnClickedButton4()
+{
+	char szPath[MAX_PATH];     //存放选择的目录路径 
+	ZeroMemory(szPath, sizeof(szPath));
+	BROWSEINFO bi;
+	bi.hwndOwner = m_hWnd;
+	bi.pidlRoot = NULL;
+	bi.pszDisplayName = szPath;
+	bi.lpszTitle = "请选择需要打包的目录：";
+	bi.ulFlags = 0;
+	bi.lpfn = NULL;
+	bi.lParam = 0;
+	bi.iImage = 0;
+
+	//弹出选择目录对话框
+	LPITEMIDLIST lp = SHBrowseForFolder(&bi);
+	if (lp && SHGetPathFromIDList(lp, szPath))
+	{
+		CString temp;
+		temp = szPath;
+		temp += _T("\\version.manifest");
+		GetDlgItem(IDC_EDIT8)->SetWindowText(temp);
+	}
+	else
+		AfxMessageBox("无效的目录，请重新选择");
 }
