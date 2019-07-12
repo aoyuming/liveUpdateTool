@@ -344,8 +344,8 @@ void CupdateToolDlg::OnBnClickedButton3()
 	}
 
 	//生成相对于主程序的清单路径
-	CString mianPath, proUrl, verUrl, packUrl, 
-			name, LaunchParameters, version, 
+	CString mianPath, proUrl, verUrl, packUrl,
+			name, LaunchParameters, version, oldUrl,
 			proUotput, className;
 	GetDlgItem(IDC_EDIT3)->GetWindowText(proUrl);
 	GetDlgItem(IDC_EDIT4)->GetWindowText(verUrl);
@@ -356,18 +356,23 @@ void CupdateToolDlg::OnBnClickedButton3()
 	GetDlgItem(IDC_EDIT9)->GetWindowText(version);
 	GetDlgItem(IDC_EDIT2)->GetWindowText(proUotput);
 	GetDlgItem(IDC_EDIT10)->GetWindowText(className);
+	GetDlgItem(IDC_EDIT11)->GetWindowText(oldUrl);
 
 	if (LaunchParameters == _T(""))
 		LaunchParameters = _T("null");
 
 	if (className == _T(""))
-		LaunchParameters = _T("null");
+		className = _T("null");
+
+	if (oldUrl == _T(""))
+		oldUrl = _T("null");
 
 	CString allData, temp;
 	temp.Format(_T("%d\r\n"), m_LocalAllFilePathVect.size());
 	allData += CString(_T("远程packageUrl地址:")) + packUrl + _T("\r\n");
 	allData += CString(_T("远程project.manifest地址:")) + proUrl + _T("\r\n");
 	allData += CString(_T("远程version.manifest地址:")) + verUrl + _T("\r\n");
+	allData += CString(_T("历史更新信息地址:")) + oldUrl + _T("\r\n");
 	allData += CString(_T("主程序名字:")) + name + _T("\r\n");
 	allData += CString(_T("主窗口注册类名:")) + className + _T("\r\n");
 	allData += CString(_T("启动参数:")) + LaunchParameters + _T("\r\n");
